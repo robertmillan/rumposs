@@ -79,9 +79,9 @@ _oss_ioctl(int fd, unsigned long com, ...)
 	argp = va_arg(ap, void *);
 	va_end(ap);
 
-	if (IOCGROUP(com) == 'P')
+	if (NB_IOCGROUP(com) == 'P')
 		return audio_ioctl(fd, com, argp);
-	else if (IOCGROUP(com) == 'M')
+	else if (NB_IOCGROUP(com) == 'M')
 		return mixer_ioctl(fd, com, argp);
 	else
 		return ioctl(fd, com, argp);

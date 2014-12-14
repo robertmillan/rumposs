@@ -169,26 +169,26 @@ typedef struct audio_encoding {
 /*
  * Audio device operations
  */
-#define AUDIO_GETINFO	_IOR('A', 21, struct audio_info)
-#define AUDIO_SETINFO	_IOWR('A', 22, struct audio_info)
-#define AUDIO_DRAIN	_IO('A', 23)
-#define AUDIO_FLUSH	_IO('A', 24)
-#define AUDIO_WSEEK	_IOR('A', 25, u_long)
-#define AUDIO_RERROR	_IOR('A', 26, int)
-#define AUDIO_GETDEV	_IOR('A', 27, struct audio_device)
-#define AUDIO_GETENC	_IOWR('A', 28, struct audio_encoding)
-#define AUDIO_GETFD	_IOR('A', 29, int)
-#define AUDIO_SETFD	_IOWR('A', 30, int)
-#define AUDIO_PERROR	_IOR('A', 31, int)
-#define AUDIO_GETIOFFS	_IOR('A', 32, struct audio_offset)
-#define AUDIO_GETOOFFS	_IOR('A', 33, struct audio_offset)
-#define AUDIO_GETPROPS	_IOR('A', 34, int)
+#define AUDIO_GETINFO	_NB_IOR('A', 21, struct audio_info)
+#define AUDIO_SETINFO	_NB_IOWR('A', 22, struct audio_info)
+#define AUDIO_DRAIN	_NB_IO('A', 23)
+#define AUDIO_FLUSH	_NB_IO('A', 24)
+#define AUDIO_WSEEK	_NB_IOR('A', 25, u_long)
+#define AUDIO_RERROR	_NB_IOR('A', 26, int)
+#define AUDIO_GETDEV	_NB_IOR('A', 27, struct audio_device)
+#define AUDIO_GETENC	_NB_IOWR('A', 28, struct audio_encoding)
+#define AUDIO_GETFD	_NB_IOR('A', 29, int)
+#define AUDIO_SETFD	_NB_IOWR('A', 30, int)
+#define AUDIO_PERROR	_NB_IOR('A', 31, int)
+#define AUDIO_GETIOFFS	_NB_IOR('A', 32, struct audio_offset)
+#define AUDIO_GETOOFFS	_NB_IOR('A', 33, struct audio_offset)
+#define AUDIO_GETPROPS	_NB_IOR('A', 34, int)
 #define  AUDIO_PROP_FULLDUPLEX	0x01
 #define  AUDIO_PROP_MMAP	0x02
 #define  AUDIO_PROP_INDEPENDENT	0x04
 #define  AUDIO_PROP_PLAYBACK	0x10
 #define  AUDIO_PROP_CAPTURE	0x20
-#define AUDIO_GETBUFINFO	_IOR('A', 35, struct audio_info)
+#define AUDIO_GETBUFINFO	_NB_IOR('A', 35, struct audio_info)
 
 /*
  * Mixer device
@@ -261,9 +261,9 @@ typedef struct mixer_ctrl {
 /*
  * Mixer operations
  */
-#define AUDIO_MIXER_READ		_IOWR('M', 0, mixer_ctrl_t)
-#define AUDIO_MIXER_WRITE		_IOWR('M', 1, mixer_ctrl_t)
-#define AUDIO_MIXER_DEVINFO		_IOWR('M', 2, mixer_devinfo_t)
+#define AUDIO_MIXER_READ		_NB_IOWR('M', 0, mixer_ctrl_t)
+#define AUDIO_MIXER_WRITE		_NB_IOWR('M', 1, mixer_ctrl_t)
+#define AUDIO_MIXER_DEVINFO		_NB_IOWR('M', 2, mixer_devinfo_t)
 
 /*
  * Well known device names
