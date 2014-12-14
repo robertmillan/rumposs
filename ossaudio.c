@@ -49,7 +49,7 @@ __RCSID("$NetBSD: ossaudio.c,v 1.30 2014/09/09 10:45:18 nat Exp $");
 #include <unistd.h>
 #include <stdarg.h>
 
-#include "soundcard.h"
+#include <sys/soundcard.h>
 #undef ioctl
 
 #define GET_DEV(com) ((com) & 0xff)
@@ -96,7 +96,9 @@ audio_ioctl(int fd, unsigned long com, void *argp)
 	struct audio_buf_info bufinfo;
 	struct count_info cntinfo;
 	struct audio_encoding tmpenc;
+#ifdef SNDCTL_SYSINFO
 	struct oss_sysinfo tmpsysinfo;
+#endif
 	struct oss_audioinfo *tmpaudioinfo;
 	audio_device_t tmpaudiodev;
 	struct stat tmpstat;
@@ -204,30 +206,38 @@ audio_ioctl(int fd, unsigned long com, void *argp)
 			tmpinfo.play.encoding =
 			tmpinfo.record.encoding = AUDIO_ENCODING_ULINEAR_BE;
 			break;
+#ifdef AFMT_S24_LE
 		case AFMT_S24_LE:
 			tmpinfo.play.precision =
 			tmpinfo.record.precision = 24;
 			tmpinfo.play.encoding =
 			tmpinfo.record.encoding = AUDIO_ENCODING_SLINEAR_LE;
 			break;
+#endif
+#ifdef AFMT_S24_BE
 		case AFMT_S24_BE:
 			tmpinfo.play.precision =
 			tmpinfo.record.precision = 24;
 			tmpinfo.play.encoding =
 			tmpinfo.record.encoding = AUDIO_ENCODING_SLINEAR_BE;
 			break;
+#endif
+#ifdef AFMT_S32_LE
 		case AFMT_S32_LE:
 			tmpinfo.play.precision =
 			tmpinfo.record.precision = 32;
 			tmpinfo.play.encoding =
 			tmpinfo.record.encoding = AUDIO_ENCODING_SLINEAR_LE;
 			break;
+#endif
+#ifdef AFMT_S32_BE
 		case AFMT_S32_BE:
 			tmpinfo.play.precision =
 			tmpinfo.record.precision = 32;
 			tmpinfo.play.encoding =
 			tmpinfo.record.encoding = AUDIO_ENCODING_SLINEAR_BE;
 			break;
+#endif
 		case AFMT_AC3:
 			tmpinfo.play.precision =
 			tmpinfo.record.precision = 16;
@@ -251,21 +261,33 @@ audio_ioctl(int fd, unsigned long com, void *argp)
 			idat = AFMT_A_LAW;
 			break;
 		case AUDIO_ENCODING_SLINEAR_LE:
+#ifdef AFMT_S32_LE
 			if (tmpinfo.play.precision == 32)
 				idat = AFMT_S32_LE;
-			else if (tmpinfo.play.precision == 24)
+			else
+#endif
+#ifdef AFMT_S24_LE
+			if (tmpinfo.play.precision == 24)
 				idat = AFMT_S24_LE;
-			else if (tmpinfo.play.precision == 16)
+			else
+#endif
+			if (tmpinfo.play.precision == 16)
 				idat = AFMT_S16_LE;
 			else
 				idat = AFMT_S8;
 			break;
 		case AUDIO_ENCODING_SLINEAR_BE:
+#ifdef AFMT_S32_BE
 			if (tmpinfo.play.precision == 32)
 				idat = AFMT_S32_BE;
-			else if (tmpinfo.play.precision == 24)
+			else
+#endif
+#ifdef AFMT_S24_BE
+			if (tmpinfo.play.precision == 24)
 				idat = AFMT_S24_BE;
-			else if (tmpinfo.play.precision == 16)
+			else
+#endif
+			if (tmpinfo.play.precision == 16)
 				idat = AFMT_S16_BE;
 			else
 				idat = AFMT_S8;
@@ -359,21 +381,33 @@ audio_ioctl(int fd, unsigned long com, void *argp)
 				idat |= AFMT_S8;
 				break;
 			case AUDIO_ENCODING_SLINEAR_LE:
+#ifdef AFMT_S32_LE
 				if (tmpenc.precision == 32)
 					idat |= AFMT_S32_LE;
-				else if (tmpenc.precision == 24)
+				else
+#endif
+#ifdef AFMT_S24_LE
+				if (tmpenc.precision == 24)
 					idat |= AFMT_S24_LE;
-				else if (tmpenc.precision == 16)
+				else
+#endif
+				if (tmpenc.precision == 16)
 					idat |= AFMT_S16_LE;
 				else
 					idat |= AFMT_S8;
 				break;
 			case AUDIO_ENCODING_SLINEAR_BE:
+#ifdef AFMT_S32_BE
 				if (tmpenc.precision == 32)
 					idat |= AFMT_S32_BE;
-				else if (tmpenc.precision == 24)
+				else
+#endif
+#ifdef AFMT_S24_BE
+				if (tmpenc.precision == 24)
 					idat |= AFMT_S24_BE;
-				else if (tmpenc.precision == 16)
+				else
+#endif
+				if (tmpenc.precision == 16)
 					idat |= AFMT_S16_BE;
 				else
 					idat |= AFMT_S8;
@@ -496,7 +530,8 @@ audio_ioctl(int fd, unsigned long com, void *argp)
 		cntinfo.ptr = tmpoffs.offset;
 		*(struct count_info *)argp = cntinfo;
 		break;
-	case SNDCTL_SYSINFO:
+#ifdef SNDCTL_SYSINFO
+ 	case SNDCTL_SYSINFO:
 		strncpy(tmpsysinfo.product, "OSS/NetBSD", 31);
 		tmpsysinfo.product[31] = 0; 
 		strncpy(tmpsysinfo.version, version, 31); 
@@ -516,8 +551,14 @@ audio_ioctl(int fd, unsigned long com, void *argp)
 		memset(tmpsysinfo.openedmidi, 0, 8);
 		*(struct oss_sysinfo *)argp = tmpsysinfo;
 		break;
+#endif
+#if defined(SNDCTL_ENGINEINFO) || defined(SNDCTL_AUDIOINFO)
+#ifdef SNDCTL_ENGINEINFO
 	case SNDCTL_ENGINEINFO:
+#endif
+#ifdef SNDCTL_AUDIOINFO
 	case SNDCTL_AUDIOINFO:
+#endif
 		devno = 0;
 		tmpaudioinfo = (struct oss_audioinfo*)argp;
 		if (tmpaudioinfo == NULL)
@@ -581,12 +622,16 @@ audio_ioctl(int fd, unsigned long com, void *argp)
 		tmpaudioinfo->next_rec_engine = 0;
 		argp = tmpaudioinfo;
 		break;
+#endif
+#ifdef SNDCTL_DSP_GETPLAYVOL
 	case SNDCTL_DSP_GETPLAYVOL:
 		retval = ioctl(fd, AUDIO_GETBUFINFO, &tmpinfo);
 		if (retval < 0)
 			return retval;
 		*(uint *)argp = tmpinfo.play.gain;
 		break;
+#endif
+#ifdef SNDCTL_DSP_SETPLAYVOL
 	case SNDCTL_DSP_SETPLAYVOL:
 		retval = ioctl(fd, AUDIO_GETBUFINFO, &tmpinfo);
 		if (retval < 0)
@@ -599,12 +644,16 @@ audio_ioctl(int fd, unsigned long com, void *argp)
 		if (retval < 0)
 			return retval;
 		break;
+#endif
+#ifdef SNDCTL_DSP_GETRECVOL
 	case SNDCTL_DSP_GETRECVOL:
 		retval = ioctl(fd, AUDIO_GETBUFINFO, &tmpinfo);
 		if (retval < 0)
 			return retval;
 		*(uint *)argp = tmpinfo.record.gain;
 		break;
+#endif
+#ifdef SNDCTL_DSP_SETRECVOL
 	case SNDCTL_DSP_SETRECVOL:
 		retval = ioctl(fd, AUDIO_GETBUFINFO, &tmpinfo);
 		if (retval < 0)
@@ -617,9 +666,15 @@ audio_ioctl(int fd, unsigned long com, void *argp)
 		if (retval < 0)
 			return retval;
 		break;
+#endif
+#ifdef SNDCTL_DSP_SKIP
 	case SNDCTL_DSP_SKIP:
+		return EINVAL;
+#endif
+#ifdef SNDCTL_DSP_SILENCE
 	case SNDCTL_DSP_SILENCE:
 		return EINVAL;
+#endif
 	case SNDCTL_DSP_SETDUPLEX:
 		idat = 1;
 		retval = ioctl(fd, AUDIO_SETFD, &idat);
@@ -904,7 +959,9 @@ mixer_ioctl(int fd, unsigned long com, void *argp)
 		idat = di->caps;
 		break;
 	case SOUND_MIXER_WRITE_RECSRC:
+#ifdef SOUND_MIXER_WRITE_R_RECSRC
 	case SOUND_MIXER_WRITE_R_RECSRC:
+#endif
 		if (di->source == -1)
 			return EINVAL;
 		mc.dev = di->source;
@@ -932,6 +989,9 @@ mixer_ioctl(int fd, unsigned long com, void *argp)
 		}
 		return ioctl(fd, AUDIO_MIXER_WRITE, &mc);
 	default:
+#ifndef SOUND_MIXER_FIRST
+#define SOUND_MIXER_FIRST 0
+#endif
 		if (MIXER_READ(SOUND_MIXER_FIRST) <= com &&
 		    com < MIXER_READ(SOUND_MIXER_NRDEVICES)) {
 			n = GET_DEV(com);
@@ -956,6 +1016,9 @@ mixer_ioctl(int fd, unsigned long com, void *argp)
 			}
 			idat = TO_OSSVOL(l) | (TO_OSSVOL(r) << 8);
 			break;
+#ifdef __linux__
+#define MIXER_WRITE_R	MIXER_WRITE
+#endif
 		} else if ((MIXER_WRITE_R(SOUND_MIXER_FIRST) <= com &&
 			   com < MIXER_WRITE_R(SOUND_MIXER_NRDEVICES)) ||
 			   (MIXER_WRITE(SOUND_MIXER_FIRST) <= com &&
