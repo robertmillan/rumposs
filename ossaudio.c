@@ -52,6 +52,12 @@ __RCSID("$NetBSD: ossaudio.c,v 1.30 2014/09/09 10:45:18 nat Exp $");
 #include <sys/soundcard.h>
 #undef ioctl
 
+/* Redirect our own ioctl() calls to rump */
+#include <stdint.h>
+#include <rump/rump.h>
+#include <rump/rump_syscalls.h>
+#define ioctl rump_sys_ioctl
+
 #define GET_DEV(com) ((com) & 0xff)
 
 #define TO_OSSVOL(x)	(((x) * 100 + 127) / 255)
