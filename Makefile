@@ -5,7 +5,7 @@ LDFLAGS += -lpthread -lrt -shared -fpic
 LDFLAGS+= -lrumpvfs -lrumpdev -lrumpdev_audio
 
 # PCI audio
-LDFLAGS+= -lrumpdev_pci -lrumpdev_pci_auich
+LDFLAGS+= -lrumpdev_pci -lrumpdev_audio_ac97 -lrumpdev_pci_auich
 
 all: rumposs.so
 
