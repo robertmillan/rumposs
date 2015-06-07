@@ -1,4 +1,4 @@
-CFLAGS += -D__RCSID\(x\)='' -Wall -Werror -fpic -D_GNU_SOURCE -O2 -g -I.
+CFLAGS += -Wall -Werror -fpic -D_GNU_SOURCE -O2 -g -I.
 LDFLAGS += -lpthread -lrt -shared -fpic
 
 # Generic RUMP audio support

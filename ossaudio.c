@@ -27,7 +27,6 @@
  */
 
 #include <sys/cdefs.h>
-__RCSID("$NetBSD: ossaudio.c,v 1.30 2014/09/09 10:45:18 nat Exp $");
 
 /*
  * This is an OSS (Linux) sound API emulator.
