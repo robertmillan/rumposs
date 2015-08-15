@@ -10,6 +10,7 @@ case $(uname -s) in
 
 		## auich
 		echo "8086 2415" > /sys/bus/pci/drivers/uio_pci_generic/new_id
+		echo "10de 0059" > /sys/bus/pci/drivers/uio_pci_generic/new_id
 
 		## hdaudio
 		echo "8086 2668" > /sys/bus/pci/drivers/uio_pci_generic/new_id
