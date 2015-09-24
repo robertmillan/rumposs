@@ -698,8 +698,12 @@ audio_ioctl(int fd, unsigned long com, void *argp)
 		 * implementing it as a NOP is ok
 		 */     
 		break;
+#ifdef SNDCTL_DSP_MAPINBUF
 	case SNDCTL_DSP_MAPINBUF:
+#endif
+#ifdef SNDCTL_DSP_MAPOUTBUF
 	case SNDCTL_DSP_MAPOUTBUF:
+#endif
 	case SNDCTL_DSP_SETSYNCRO:
 		errno = EINVAL;
 		return -1; /* XXX unimplemented */
@@ -1021,11 +1025,11 @@ mixer_ioctl(int fd, unsigned long com, void *argp)
 			}
 			idat = TO_OSSVOL(l) | (TO_OSSVOL(r) << 8);
 			break;
-#ifdef __linux__
-#define MIXER_WRITE_R	MIXER_WRITE
-#endif
-		} else if ((MIXER_WRITE_R(SOUND_MIXER_FIRST) <= com &&
+		} else if (
+#ifdef MIXER_WRITE_R
+			   (MIXER_WRITE_R(SOUND_MIXER_FIRST) <= com &&
 			   com < MIXER_WRITE_R(SOUND_MIXER_NRDEVICES)) ||
+#endif
 			   (MIXER_WRITE(SOUND_MIXER_FIRST) <= com &&
 			   com < MIXER_WRITE(SOUND_MIXER_NRDEVICES))) {
 			n = GET_DEV(com);
