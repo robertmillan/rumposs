@@ -1,5 +1,6 @@
-#!/bin/sh
+#!/bin/bash
 cmd="$1"
+wd=$(dirname $0)
 shift
 
 case $(uname -s) in
@@ -8,13 +9,9 @@ case $(uname -s) in
 
 		modprobe uio_pci_generic
 
-		## auich
-		echo "8086 2415" > /sys/bus/pci/drivers/uio_pci_generic/new_id
-		echo "10de 0059" > /sys/bus/pci/drivers/uio_pci_generic/new_id
-
-		## hdaudio
-		echo "8086 2668" > /sys/bus/pci/drivers/uio_pci_generic/new_id
-		echo "8086 27d8" > /sys/bus/pci/drivers/uio_pci_generic/new_id
+		cat ${wd}/pcidevs/{auich,hdaudio} | while read vendor device ; do
+			echo "${vendor} ${device}" > /sys/bus/pci/drivers/uio_pci_generic/new_id
+		done
 	;;
 esac
 
