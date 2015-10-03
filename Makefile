@@ -2,12 +2,12 @@ CFLAGS += -Wall -Werror -fpic -D_GNU_SOURCE -O2 -g -I.
 LDFLAGS += -lpthread -lrt -shared -fpic
 
 # Generic RUMP audio support
-LDFLAGS+= -lrumpvfs -lrumpdev -lrumpdev_audio
+LDFLAGS+= -Wl,--no-as-needed -lrumpvfs -Wl,--no-as-needed -lrumpdev -Wl,--no-as-needed -lrumpdev_audio
 
 # PCI audio
-LDFLAGS+= -lrumpdev_pci
-LDFLAGS+= -lrumpdev_audio_ac97 -lrumpdev_pci_auich
-LDFLAGS+= -lrumpdev_pci_hdaudio -lrumpdev_hdaudio_hdafg
+LDFLAGS+= -Wl,--no-as-needed -lrumpdev_pci
+LDFLAGS+= -Wl,--no-as-needed -lrumpdev_audio_ac97 -Wl,--no-as-needed -lrumpdev_pci_auich
+LDFLAGS+= -Wl,--no-as-needed -lrumpdev_pci_hdaudio -Wl,--no-as-needed -lrumpdev_hdaudio_hdafg
 
 all: rumposs.so
 
