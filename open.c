@@ -1,3 +1,5 @@
+#include <err.h>
+
 int
 open(const char *file, int flags, ...)
 {
@@ -20,7 +22,10 @@ open(const char *file, int flags, ...)
     }
 
   if (!strncmp (file, "/dev/dsp", 8))
-    asprintf (&new_file, "/dev/sound%s", file + sizeof("/dev/dsp") - 1);
+    {
+      if (asprintf (&new_file, "/dev/sound%s", file + sizeof("/dev/dsp") - 1) == -1)
+	err(1, "asprintf");
+    }
   else
     new_file = strdup (file);
   if (! new_file)
