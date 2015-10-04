@@ -15,4 +15,4 @@ case $(uname -s) in
 	;;
 esac
 
-LD_PRELOAD=./rumposs.so exec $cmd $@
+LD_PRELOAD=./rumposs.so exec "$cmd" "$@"
