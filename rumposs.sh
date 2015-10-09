@@ -9,8 +9,10 @@ case $(uname -s) in
 
 		modprobe uio_pci_generic
 
-		cat ${wd}/pcidevs/{auich,hdaudio} | while read vendor device ; do
-			echo "${vendor} ${device}" > /sys/bus/pci/drivers/uio_pci_generic/new_id
+		lspci_n=$(lspci -n)
+		for busid in $(echo "${lspci_n}" | awk '{ if ($2 == "0401:" || $2 == "0403:") print $1 }') ; do
+			echo "${lspci_n}" | grep "^${busid}\s" | awk '{ print $3 }' | tr ':' ' ' \
+				> /sys/bus/pci/drivers/uio_pci_generic/new_id || return 2
 		done
 	;;
 esac
